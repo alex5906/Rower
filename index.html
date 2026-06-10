@@ -4,29 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rowing Machine Coach</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.0/umd/lucide.min.js"></script>
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --card-dark: #1e293b;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
             --primary: #0284c7;
             --primary-hover: #0369a1;
-            --accent: #f59e0b;
-            --text-light: #f8fafc;
-            --text-muted: #94a3b8;
-            --success: #10b981;
+            --accent: #d97706;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --border: #e2e8f0;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
+            background-color: var(--bg);
+            color: var(--text);
             padding: 2rem 1rem;
             min-height: 100vh;
         }
@@ -43,30 +44,33 @@
 
         h1 {
             font-size: 2.5rem;
-            color: var(--text-light);
+            color: var(--primary);
             margin-bottom: 0.5rem;
         }
 
         .subtitle {
             color: var(--text-muted);
+            font-size: 1.1rem;
         }
 
         .card {
-            background-color: var(--card-dark);
+            background-color: var(--card);
+            border: 1px solid var(--border);
             border-radius: 1rem;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
         h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
+            font-size: 1.4rem;
+            margin-bottom: 1.2rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
+        /* Routine Grid */
         .routine-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -78,9 +82,9 @@
         }
 
         .btn-routine {
-            background: #334155;
+            background: #f1f5f9;
             border: 2px solid transparent;
-            color: var(--text-light);
+            color: var(--text);
             padding: 1rem;
             border-radius: 0.5rem;
             cursor: pointer;
@@ -89,18 +93,19 @@
         }
 
         .btn-routine:hover {
-            background: #475569;
+            background: #e2e8f0;
         }
 
         .btn-routine.active {
             border-color: var(--primary);
-            background: #0c4a6e;
+            background: #e0f2fe;
         }
 
         .routine-title {
             font-weight: bold;
             font-size: 1.1rem;
             margin-bottom: 0.25rem;
+            color: var(--primary);
         }
 
         .routine-desc {
@@ -108,29 +113,41 @@
             color: var(--text-muted);
         }
 
+        /* Table Styles */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         th, td {
             padding: 0.75rem;
             text-align: left;
-            border-bottom: 1px solid #334155;
+            border-bottom: 1px solid var(--border);
         }
 
-        th { color: var(--text-muted); font-size: 0.9rem; }
+        th { 
+            color: var(--text-muted); 
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
 
         input {
-            background: #334155;
-            border: 1px solid #475569;
-            color: white;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: var(--text);
             padding: 0.4rem;
             border-radius: 0.25rem;
             width: 100%;
+            font-size: 0.95rem;
         }
 
+        input:focus {
+            outline: 2px solid var(--primary);
+        }
+
+        /* Buttons */
         .btn {
             background-color: var(--primary);
             color: white;
@@ -139,6 +156,7 @@
             border-radius: 0.5rem;
             cursor: pointer;
             font-weight: bold;
+            font-size: 1rem;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
@@ -146,11 +164,12 @@
         }
 
         .btn:hover { background-color: var(--primary-hover); }
-        .btn-danger { background-color: #ef4444; }
-        .btn-danger:hover { background-color: #dc2626; }
-        .btn-secondary { background-color: #475569; }
-        .btn-secondary:hover { background-color: #334155; }
+        .btn-danger { background-color: var(--danger); }
+        .btn-danger:hover { background-color: #b91c1c; }
+        .btn-secondary { background-color: #64748b; }
+        .btn-secondary:hover { background-color: #475569; }
 
+        /* Workout HUD Layout */
         .hud-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -160,33 +179,35 @@
         }
 
         .hud-block {
-            background: #0f172a;
-            padding: 1rem;
+            background: #f1f5f9;
+            padding: 1.2rem;
             border-radius: 0.5rem;
+            border: 1px solid var(--border);
         }
 
         .hud-label {
             font-size: 0.85rem;
             color: var(--text-muted);
             text-transform: uppercase;
+            font-weight: 600;
             letter-spacing: 0.05em;
         }
 
         .hud-value {
             font-size: 2.5rem;
-            font-weight: bold;
+            font-weight: 800;
             font-family: monospace;
-            color: var(--text-light);
+            color: var(--text);
             margin-top: 0.25rem;
         }
 
         .hud-value.highlight { color: var(--accent); }
-        .hud-value.pace { color: #38bdf8; }
+        .hud-value.pace { color: var(--primary); }
 
         .progress-bar-container {
-            background: #334155;
-            height: 12px;
-            border-radius: 6px;
+            background: #e2e8f0;
+            height: 16px;
+            border-radius: 8px;
             margin-top: 1.5rem;
             overflow: hidden;
         }
@@ -194,4 +215,121 @@
         .progress-bar {
             background: var(--success);
             height: 100%;
-            width: 0
+            width: 0%;
+            transition: width 1s linear;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        /* Interval change visual alert */
+        .alert-flash {
+            animation: flash 0.5s infinite alternate;
+        }
+
+        @keyframes flash {
+            from { background-color: #ffffff; }
+            to { background-color: #fef3c7; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🚣‍♂️ RowCoach</h1>
+        <p class="subtitle">Interactive Rowing Machine Workout Planner & Guide</p>
+    </header>
+
+    <div class="card" id="routine-selector-card">
+        <h2>📊 1. Select a Routine</h2>
+        <div class="routine-grid" id="routine-presets"></div>
+    </div>
+
+    <div class="card" id="customizer-card">
+        <h2>⚙️ 2. Review / Customise Intervals</h2>
+        <table id="intervals-table">
+            <thead>
+                <tr>
+                    <th>Interval Type</th>
+                    <th>Duration (Min)</th>
+                    <th>Target Pace (SPM)</th>
+                    <th>Resistance / Damper</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="intervals-body"></tbody>
+        </table>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button class="btn btn-secondary" onclick="addIntervalRow()">➕ Add Interval</button>
+            <button class="btn" onclick="startWorkout()">▶️ Start Workout</button>
+        </div>
+    </div>
+
+    <div class="card" id="hud-card" style="display: none;">
+        <h2 id="hud-status">⏱️ Workout Active</h2>
+        
+        <div class="hud-grid">
+            <div class="hud-block">
+                <div class="hud-label">Time Remaining</div>
+                <div class="hud-value" id="hud-time">00:00</div>
+            </div>
+            <div class="hud-block">
+                <div class="hud-label">Target Pace (SPM)</div>
+                <div class="hud-value pace" id="hud-pace">--</div>
+            </div>
+            <div class="hud-block">
+                <div class="hud-label">Damper / Resistance</div>
+                <div class="hud-value highlight" id="hud-resistance">--</div>
+            </div>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="workout-progress"></div>
+        </div>
+
+        <div style="text-align: center; margin-top: 1.5rem; color: var(--text-muted); font-weight: 500; font-size: 1.1rem;" id="hud-next-step">
+            Next up: Ready to row
+        </div>
+
+        <div class="controls-row">
+            <button class="btn btn-secondary" id="pause-btn" onclick="togglePause()">⏸️ Pause</button>
+            <button class="btn btn-danger" onclick="stopWorkout()">🛑 Stop / Reset</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const presets = {
+        pyramid: {
+            title: "Pace Pyramid",
+            desc: "Classic aerobic capacity builder. Step up the strokes, then back down.",
+            intervals: [
+                { type: "Warm Up", duration: 3, pace: 20, resistance: 4 },
+                { type: "Work Block", duration: 2, pace: 24, resistance: 5 },
+                { type: "Peak Burn", duration: 1, pace: 28, resistance: 5 },
+                { type: "Work Block", duration: 2, pace: 24, resistance: 5 },
+                { type: "Cool Down", duration: 3, pace: 18, resistance: 3 }
+            ]
+        },
+        hiit: {
+            title: "HIIT Sprints",
+            desc: "High intensity intervals to torch calories and build raw power.",
+            intervals: [
+                { type: "Warm Up", duration: 3, pace: 20, resistance: 4 },
+                { type: "Sprint 1", duration: 1, pace: 30, resistance: 6 },
+                { type: "Recovery", duration: 1, pace: 18, resistance: 4 },
+                { type: "Sprint 2", duration: 1, pace: 32, resistance: 6 },
+                { type: "Recovery", duration: 1, pace: 18, resistance: 4 },
+                { type: "Sprint 3", duration: 1, pace: 34, resistance: 6 },
+                { type: "Cool Down", duration: 2, pace: 18, resistance: 3 }
+            ]
+        },
+        steady: {
+            title: "Steady State",
+            desc: "Long endurance block mimicking open water baseline pacing.",
+            intervals:
