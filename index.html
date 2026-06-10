@@ -332,4 +332,194 @@
         steady: {
             title: "Steady State",
             desc: "Long endurance block mimicking open water baseline pacing.",
-            intervals:
+            intervals: [
+                { type: "Warm Up", duration: 2, pace: 20, resistance: 4 },
+                { type: "Steady Row", duration: 10, pace: 22, resistance: 5 },
+                { type: "Cool Down", duration: 2, pace: 18, resistance: 4 }
+            ]
+        }
+    };
+
+    let activeIntervals = [];
+    let currentIntervalIndex = 0;
+    let timeRemainingInInterval = 0; 
+    let workoutTimer = null;
+    let isPaused = false;
+    let audioCtx = null;
+
+    window.onload = () => {
+        setupPresetButtons();
+        selectPreset('pyramid');
+    };
+
+    function setupPresetButtons() {
+        const container = document.getElementById('routine-presets');
+        container.innerHTML = "";
+        for (let key in presets) {
+            container.innerHTML += `
+                <button class="btn-routine" id="preset-${key}" onclick="selectPreset('${key}')">
+                    <div class="routine-title">${presets[key].title}</div>
+                    <div class="routine-desc">${presets[key].desc}</div>
+                </button>
+            `;
+        }
+    }
+
+    function selectPreset(key) {
+        document.querySelectorAll('.btn-routine').forEach(b => b.classList.remove('active'));
+        const btn = document.getElementById(`preset-${key}`);
+        if(btn) btn.classList.add('active');
+
+        activeIntervals = JSON.parse(JSON.stringify(presets[key].intervals));
+        renderCustomizer();
+    }
+
+    function renderCustomizer() {
+        const tbody = document.getElementById('intervals-body');
+        tbody.innerHTML = "";
+        activeIntervals.forEach((interval, index) => {
+            tbody.innerHTML += `
+                <tr id="row-${index}">
+                    <td><input type="text" value="${interval.type}" onchange="updateInterval(${index}, 'type', this.value)"></td>
+                    <td><input type="number" value="${interval.duration}" min="0.5" step="0.5" onchange="updateInterval(${index}, 'duration', this.value)"></td>
+                    <td><input type="number" value="${interval.pace}" min="10" max="50" onchange="updateInterval(${index}, 'pace', this.value)"></td>
+                    <td><input type="number" value="${interval.resistance}" min="1" max="10" onchange="updateInterval(${index}, 'resistance', this.value)"></td>
+                    <td><button class="btn btn-danger" style="padding: 0.3rem 0.6rem" onclick="deleteRow(${index})">✕</button></td>
+                </tr>
+            `;
+        });
+    }
+
+    function updateInterval(index, property, value) {
+        if (property === 'duration' || property === 'pace' || property === 'resistance') {
+            let num = parseFloat(value);
+            activeIntervals[index][property] = isNaN(num) ? 1 : num;
+        } else {
+            activeIntervals[index][property] = value;
+        }
+    }
+
+    function addIntervalRow() {
+        activeIntervals.push({ type: "Work Block", duration: 1, pace: 24, resistance: 5 });
+        renderCustomizer();
+    }
+
+    function deleteRow(index) {
+        activeIntervals.splice(index, 1);
+        renderCustomizer();
+    }
+
+    function playBeep(frequency = 440, duration = 0.2) {
+        try {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            let oscillator = audioCtx.createOscillator();
+            let gainNode = audioCtx.createGain();
+            oscillator.type = 'sine';
+            oscillator.frequency.value = frequency;
+            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + duration);
+        } catch(e) { console.log("Audio not supported or blocked."); }
+    }
+
+    function startWorkout() {
+        if (activeIntervals.length === 0) return alert("Please add at least one interval!");
+        
+        document.getElementById('routine-selector-card').style.display = 'none';
+        document.getElementById('customizer-card').style.display = 'none';
+        document.getElementById('hud-card').style.display = 'block';
+
+        currentIntervalIndex = 0;
+        isPaused = false;
+        
+        loadInterval(currentIntervalIndex);
+
+        if(workoutTimer) clearInterval(workoutTimer);
+        workoutTimer = setInterval(workoutTick, 1000);
+    }
+
+    function loadInterval(index) {
+        if(index >= activeIntervals.length) {
+            endWorkout();
+            return;
+        }
+        
+        const interval = activeIntervals[index];
+        timeRemainingInInterval = Math.max(1, Math.round(interval.duration * 60)); 
+        
+        document.getElementById('hud-status').innerText = `⚡ Current: ${interval.type}`;
+        document.getElementById('hud-pace').innerText = `${interval.pace}`;
+        document.getElementById('hud-resistance').innerText = `${interval.resistance}`;
+        
+        if(index + 1 < activeIntervals.length) {
+            const next = activeIntervals[index+1];
+            document.getElementById('hud-next-step').innerText = `Next up: ${next.type} (${next.duration}m at ${next.pace} SPM)`;
+        } else {
+            document.getElementById('hud-next-step').innerText = `Next up: Finish Line! 🏁`;
+        }
+        
+        updateHudTimeDisplay();
+        playBeep(587.33, 0.4); 
+    }
+
+    function workoutTick() {
+        if(isPaused) return;
+
+        timeRemainingInInterval--;
+        updateHudTimeDisplay();
+
+        if (timeRemainingInInterval <= 3 && timeRemainingInInterval > 0) {
+            playBeep(440, 0.1);
+            document.getElementById('hud-card').classList.add('alert-flash');
+        } else {
+            document.getElementById('hud-card').classList.remove('alert-flash');
+        }
+
+        if(timeRemainingInInterval <= 0) {
+            currentIntervalIndex++;
+            loadInterval(currentIntervalIndex);
+        }
+    }
+
+    function updateHudTimeDisplay() {
+        const mins = Math.floor(timeRemainingInInterval / 60);
+        const secs = timeRemainingInInterval % 60;
+        document.getElementById('hud-time').innerText = 
+            `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+        const totalSecs = activeIntervals[currentIntervalIndex].duration * 60;
+        const percent = ((totalSecs - timeRemainingInInterval) / totalSecs) * 100;
+        document.getElementById('workout-progress').style.width = `${Math.min(100, Math.max(0, percent))}%`;
+    }
+
+    function togglePause() {
+        isPaused = !isPaused;
+        const btn = document.getElementById('pause-btn');
+        if(isPaused) {
+            btn.innerText = `▶️ Resume`;
+            document.getElementById('hud-status').innerText = `⏸️ Paused`;
+        } else {
+            btn.innerText = `⏸️ Pause`;
+            document.getElementById('hud-status').innerText = `⚡ Current: ${activeIntervals[currentIntervalIndex].type}`;
+        }
+    }
+
+    function stopWorkout() {
+        clearInterval(workoutTimer);
+        document.getElementById('routine-selector-card').style.display = 'block';
+        document.getElementById('customizer-card').style.display = 'block';
+        document.getElementById('hud-card').style.display = 'none';
+        document.getElementById('hud-card').classList.remove('alert-flash');
+    }
+
+    function endWorkout() {
+        clearInterval(workoutTimer);
+        playBeep(880, 0.8);
+        alert("Workout complete! Fantastic row.");
+        stopWorkout();
+    }
+</script>
+</body>
+</html>
