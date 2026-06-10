@@ -89,7 +89,6 @@
             font-weight: bold;
         }
 
-        /* Routine Selector Grid */
         .routine-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -132,7 +131,6 @@
             color: var(--text-muted);
         }
 
-        /* Table Styles for Customizer */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -165,4 +163,293 @@
             cursor: pointer;
             font-weight: bold;
             display: inline-flex;
-            align-items:
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .btn:hover { background-color: var(--primary-hover); }
+        .btn-danger { background-color: #ef4444; }
+        .btn-danger:hover { background-color: #dc2626; }
+        .btn-secondary { background-color: #475569; }
+        .btn-secondary:hover { background-color: #334155; }
+        .btn-accent { background-color: var(--accent); color: #000000; }
+        .btn-accent:hover { background-color: #d97706; }
+
+        .hud-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .hud-block {
+            background: #0f172a;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .hud-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .hud-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            font-family: monospace;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+
+        .hud-value.highlight { color: var(--accent); }
+        .hud-value.pace { color: #38bdf8; }
+
+        .progress-bar-container {
+            background: #334155;
+            height: 12px;
+            border-radius: 6px;
+            margin-top: 1.5rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: var(--success);
+            height: 100%;
+            width: 0%;
+            transition: width 1s linear;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .alert-flash {
+            animation: flash 1s infinite alternate;
+        }
+
+        @keyframes flash {
+            from { background-color: #1e293b; }
+            to { background-color: #451a03; }
+        }
+
+        svg {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 8v4l3 3"/></svg>
+            RowCoach
+        </h1>
+        <p class="subtitle">Interactive Rowing Machine Workout Planner & Guide</p>
+    </header>
+
+    <div class="card" id="config-card">
+        <h2>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Machine Configuration
+        </h2>
+        <div class="config-inputs">
+            <div class="config-group">
+                <label class="config-label" for="min-res">Minimum Resistance Target</label>
+                <input type="number" id="min-res" value="5" min="1" max="10" onchange="handleConfigChange()">
+            </div>
+            <div class="config-group">
+                <label class="config-label" for="max-res">Maximum Resistance Target</label>
+                <input type="number" id="max-res" value="8" min="1" max="10" onchange="handleConfigChange()">
+            </div>
+        </div>
+    </div>
+
+    <div class="card" id="routine-selector-card">
+        <h2>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            1. Select a Routine
+        </h2>
+        <div class="routine-grid" id="routine-presets"></div>
+    </div>
+
+    <div class="card" id="customizer-card">
+        <h2>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="14" x2="20" y2="3"/><line x1="2" y1="14" x2="6" y2="14"/><line x1="10" y1="8" x2="14" y2="8"/><line x1="18" y1="16" x2="22" y2="16"/></svg>
+            2. Review / Customise Intervals
+        </h2>
+        <table id="intervals-table">
+            <thead>
+                <tr>
+                    <th>Interval Type</th>
+                    <th>Duration (Min)</th>
+                    <th>Target Pace (SPM)</th>
+                    <th>Resistance / Damper</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="intervals-body"></tbody>
+        </table>
+        <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+            <button class="btn btn-secondary" onclick="addIntervalRow()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Interval
+            </button>
+            <button class="btn" onclick="startWorkout()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Start Workout
+            </button>
+        </div>
+    </div>
+
+    <div class="card" id="hud-card" style="display: none;">
+        <h2 id="hud-status">Workout Active</h2>
+        
+        <div class="hud-grid">
+            <div class="hud-block">
+                <div class="hud-label">Time Remaining (Interval)</div>
+                <div class="hud-value" id="hud-time">00:00</div>
+            </div>
+            <div class="hud-block">
+                <div class="hud-label">Target Pace (SPM)</div>
+                <div class="hud-value pace" id="hud-pace">--</div>
+            </div>
+            <div class="hud-block">
+                <div class="hud-label">Damper / Resistance</div>
+                <div class="hud-value highlight" id="hud-resistance">--</div>
+            </div>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="workout-progress"></div>
+        </div>
+
+        <div style="text-align: center; margin-top: 1rem; color: var(--text-muted);" id="hud-next-step">
+            Next up: Ready to row
+        </div>
+
+        <div class="controls-row">
+            <button class="btn btn-secondary" id="pause-btn" onclick="togglePause()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                <span id="pause-text">Pause</span>
+            </button>
+            <button class="btn btn-accent" onclick="skipInterval()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+                Skip Interval
+            </button>
+            <button class="btn btn-danger" onclick="stopWorkout()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+                Stop / Reset
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Global Configuration Array (ES5 Syntax compatible)
+    var basePresets = {
+        pyramid: {
+            title: "Pace Pyramid",
+            desc: "Classic aerobic capacity builder. Step up the strokes, then back down.",
+            intervals: [
+                { type: "Warm Up", duration: 3, pace: 20, baseRes: 3 },
+                { type: "Work", duration: 2, pace: 24, baseRes: 6 },
+                { type: "Work High", duration: 1, pace: 28, baseRes: 9 },
+                { type: "Work", duration: 2, pace: 24, baseRes: 6 },
+                { type: "Cool Down", duration: 3, pace: 18, baseRes: 2 }
+            ]
+        },
+        hiit: {
+            title: "HIIT Sprints",
+            desc: "High intensity intervals to torch calories and build raw power.",
+            intervals: [
+                { type: "Warm Up", duration: 3, pace: 20, baseRes: 3 },
+                { type: "Sprint", duration: 1, pace: 30, baseRes: 8 },
+                { type: "Rest Row", duration: 1, pace: 18, baseRes: 3 },
+                { type: "Sprint", duration: 1, pace: 32, baseRes: 9 },
+                { type: "Rest Row", duration: 1, pace: 18, baseRes: 3 },
+                { type: "Sprint", duration: 1, pace: 34, baseRes: 10 },
+                { type: "Cool Down", duration: 2, pace: 18, baseRes: 2 }
+            ]
+        },
+        steady: {
+            title: "Steady State",
+            desc: "Long endurance block mimicking open water baseline pacing.",
+            intervals: [
+                { type: "Warm Up", duration: 2, pace: 20, baseRes: 3 },
+                { type: "Steady Row", duration: 10, pace: 22, baseRes: 6 },
+                { type: "Cool Down", duration: 2, pace: 18, baseRes: 3 }
+            ]
+        }
+    };
+
+    var activeIntervals = [];
+    var currentIntervalIndex = 0;
+    var timeRemainingInInterval = 0; 
+    var workoutTimer = null;
+    var isPaused = false;
+    var audioCtx = null;
+    var currentPresetKey = 'pyramid';
+
+    window.onload = function() {
+        setupPresetButtons();
+        selectPreset('pyramid');
+    };
+
+    function setupPresetButtons() {
+        var container = document.getElementById('routine-presets');
+        container.innerHTML = "";
+        for (var key in basePresets) {
+            if (basePresets.hasOwnProperty(key)) {
+                container.innerHTML += '<button class="btn-routine" id="preset-' + key + '" onclick="selectPreset(\'' + key + '\')">' +
+                    '<div class="routine-title">' + basePresets[key].title + '</div>' +
+                    '<div class="routine-desc">' + basePresets[key].desc + '</div>' +
+                '</button>';
+            }
+        }
+    }
+
+    function selectPreset(key) {
+        currentPresetKey = key;
+        var buttons = document.getElementsByClassName('btn-routine');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+        }
+        var btn = document.getElementById('preset-' + key);
+        if (btn) btn.classList.add('active');
+
+        calculateIntervalsFromPreset();
+    }
+
+    function calculateIntervalsFromPreset() {
+        var minRes = parseInt(document.getElementById('min-res').value) || 1;
+        var maxRes = parseInt(document.getElementById('max-res').value) || 10;
+        
+        var template = basePresets[currentPresetKey].intervals;
+        activeIntervals = [];
+        
+        for (var i = 0; i < template.length; i++) {
+            var item = template[i];
+            var calculatedResistance = minRes + Math.round(((item.baseRes - 1) / 9) * (maxRes - minRes));
+            calculatedResistance = Math.max(minRes, Math.min(maxRes, calculatedResistance));
+            
+            activeIntervals.push({
+                type: item.type,
+                duration: item.duration,
+                pace: item.pace,
+                resistance: calculatedResistance
+            });
+        }
+        renderCustomizer();
+    }
+
+    function handleConfigChange() {
+        var minInput = document.getElementById('min-res');
