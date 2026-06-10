@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rowing Machine Coach</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.0/umd/lucide.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-dark: #1e293b;
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --accent: #f59e0b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+        }
+
+        .card {
+            background-color: var(--card-dark);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Routine Selector Grid */
+        .routine-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .routine-grid { grid-template-columns: 1fr; }
+        }
+
+        .btn-routine {
+            background: #334155;
+            border: 2px solid transparent;
+            color: var(--text-light);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .btn-routine:hover {
+            background: #475569;
+        }
+
+        .btn-routine.active {
+            border-color: var(--primary);
+            background: #0c4a6e;
+        }
+
+        .routine-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .routine-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Table Styles for Customizer */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+        }
+
+        th { color: var(--text-muted); font-size: 0.9rem; }
+
+        input {
+            background: #334155;
+            border: 1px solid #475569;
+            color: white;
+            padding: 0.4rem;
+            border-radius: 0.25rem;
+            width: 100%;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .btn:hover { background-color: var(--primary-hover); }
+        .btn-danger { background-color: #ef4444; }
+        .btn-danger:hover { background-color: #dc2626; }
+        .btn-secondary { background-color: #475569; }
+        .btn-secondary:hover { background-color: #334155; }
+
+        /* Coach Display HUD */
+        .hud-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .hud-block {
+            background: #0f172a;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .hud-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .hud-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            font-family: monospace;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+
+        .hud-value.highlight { color: var(--accent); }
+        .hud-value.pace { color: #38bdf8; }
+
+        .progress-bar-container {
+            background: #334155;
+            height: 12px;
+            border-radius: 6px;
+            margin-top: 1.5rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: var(--success);
+            height: 100%;
+            width: 0%;
+            transition: width 1s linear;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+        }
+
+        .alert-flash {
+            animation: flash 1s infinite alternate;
+        }
+
+        @keyframes flash {
+            from { background-color: #1e293b; }
+            to { background-color: #451a03; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1><i data-lucide="anchor"></i> RowCoach</h1>
+        <p class="subtitle">Interactive Rowing Machine Workout Planner & Guide</p>
+    </header>
+
+    <div class="card" id="routine-selector-card">
+        <h2><i data-lucide="activity"></i> 1. Select a Routine</h2>
+        <div class="routine-grid" id="routine-presets">
+            </div>
+    </div>
+
+    <div class="card" id="customizer-card">
+        <h2><i data-lucide="sliders"></i> 2. Review / Customise Intervals</h2>
+        <table id="intervals-table">
+            <thead>
+                <tr>
+                    <th>Interval Type</th>
+                    <th>Duration (Min)</th>
+                    <th>Target Pace (SPM)</th>
+                    <th>Resistance / Damper</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="intervals-body">
+                </tbody>
+        </table>
+        <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+            <button class="btn btn-secondary" onclick="addIntervalRow()"><i data-lucide="plus"></i> Add Interval</button>
+            <button class="btn" onclick="startWorkout()"><i data-lucide="play"></i> Start Workout</button>
+        </div>
+    </div>
+
+    <div class="card" id="hud-card" style="display: none;">
+        <h2 id="hud-status"><i data-lucide="timer"></i> Workout Active</h2>
+        
+        <div class="hud-grid">
+            <div class="hud-block">
+                <div class="hud-label">Time Remaining (Interval)</div>
+                <div class="hud-value" id="hud-time">00:00</div>
+            </div>
+            <div class="hud-block">
+                <div class="hud-label">Target Pace (SPM)</div>
+                <div class="hud-value pace" id="hud-pace">--</div>
+            </div>
+            <div class="hud-block">
+                <div class="hud-label">Damper / Resistance</div>
+                <div class="hud-value highlight" id="hud-resistance">--</div>
+            </div>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="workout-progress"></div>
+        </div>
+
+        <div style="text-align: center; margin-top: 1rem; color: var(--text-muted);" id="hud-next-step">
+            Next up: Ready to row
+        </div>
+
+        <div class="controls-row">
+            <button class="btn btn-secondary" id="pause-btn" onclick="togglePause()"><i data-lucide="pause"></i> Pause</button>
+            <button class="btn btn-danger" onclick="stopWorkout()"><i data-lucide="square"></i> Stop / Reset</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Predefined Routines Data
+    const presets = {
+        pyramid: {
+            title: "Pace Pyramid",
+            desc: "Classic aerobic capacity Builder. Step up the strokes, then back down.",
+            intervals: [
+                { type: "Warm Up", duration: 3, pace: 20, resistance: 4 },
+                { type: "Work", duration: 2, pace: 24, resistance: 5 },
+                { type: "Work High", duration: 1, pace: 28, resistance: 5 },
+                { type: "Work", duration: 2, pace: 24, resistance: 5 },
+                { type: "Cool Down", duration: 3, pace: 18, resistance: 3 }
+            ]
+        },
+        hiit: {
+            title: "HIIT Sprints",
+            desc: "High intensity intervals to torch calories and build raw power.",
+            intervals: [
+                { type: "Warm Up", duration: 3, pace: 20, resistance: 4 },
+                { type: "Sprint", duration: 1, pace: 30, resistance: 6 },
+                { type: "Rest Row", duration: 1, pace: 18, resistance: 4 },
+                { type: "Sprint", duration: 1, pace: 32, resistance: 6 },
+                { type: "Rest Row", duration: 1, pace: 18, resistance: 4 },
+                { type: "Sprint", duration: 1, pace: 34, resistance: 6 },
+                { type: "Cool Down", duration: 2, pace: 18, resistance: 3 }
+            ]
+        },
+        steady: {
+            title: "Steady State",
+            desc: "Long endurance block mimicking open water baseline pacing.",
+            intervals: [
+                { type: "Warm Up", duration: 2, pace: 20, resistance: 4 },
+                { type: "Steady Row", duration: 10, pace: 22, resistance: 5 },
+                { type: "Cool Down", duration: 2, pace: 18, resistance: 4 }
+            ]
+        }
+    };
+
+    let activeIntervals = [];
+    let currentIntervalIndex = 0;
+    let timeRemainingInInterval = 0; 
+    let workoutTimer = null;
+    let isPaused = false;
+    let audioCtx = null; // Used for audio cues
+
+    // Initializer
+    window.onload = () => {
+        setupPresetButtons();
+        selectPreset('pyramid');
+        lucide.createIcons();
+    };
+
+    function setupPresetButtons() {
+        const container = document.getElementById('routine-presets');
+        for (let key in presets) {
+            container.innerHTML += `
+                <button class="btn-routine" id="preset-${key}" onclick="selectPreset('${key}')">
+                    <div class="routine-title">${presets[key].title}</div>
+                    <div class="routine-desc">${presets[key].desc}</div>
+                </button>
+            `;
+        }
+    }
+
+    function selectPreset(key) {
+        document.querySelectorAll('.btn-routine').forEach(b => b.classList.remove('active'));
+        const btn = document.getElementById(`preset-${key}`);
+        if(btn) btn.classList.add('active');
+
+        activeIntervals = JSON.parse(JSON.stringify(presets[key].intervals)); // deep copy
+        renderCustomizer();
+    }
+
+    function renderCustomizer() {
+        const tbody = document.getElementById('intervals-body');
+        tbody.innerHTML = "";
+        activeIntervals.forEach((interval, index) => {
+            tbody.innerHTML += `
+                <tr id="row-${index}">
+                    <td><input type="text" value="${interval.type}" onchange="updateInterval(${index}, 'type', this.value)"></td>
+                    <td><input type="number" value="${interval.duration}" min="0.5" step="0.5" onchange="updateInterval(${index}, 'duration', this.value)"></td>
+                    <td><input type="number" value="${interval.pace}" min="10" max="50" onchange="updateInterval(${index}, 'pace', this.value)"> (SPM)</td>
+                    <td><input type="number" value="${interval.resistance}" min="1" max="10" onchange="updateInterval(${index}, 'resistance', this.value)"></td>
+                    <td><button class="btn btn-danger" style="padding: 0.3rem 0.6rem" onclick="deleteRow(${index})">✕</button></td>
+                </tr>
+            `;
+        });
+    }
+
+    function updateInterval(index, property, value) {
+        if (property === 'duration' || property === 'pace' || property === 'resistance') {
+            activeIntervals[index][property] = parseFloat(value);
+        } else {
+            activeIntervals[index][property] = value;
+        }
+    }
+
+    function addIntervalRow() {
+        activeIntervals.push({ type: "Work", duration: 1, pace: 24, resistance: 5 });
+        renderCustomizer();
+    }
+
+    function deleteRow(index) {
+        activeIntervals.splice(index, 1);
+        renderCustomizer();
+    }
+
+    // Sound alert function to keep eyes off the phone/screen if needed
+    function playBeep(frequency = 440, duration = 0.2) {
+        try {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            let oscillator = audioCtx.createOscillator();
+            let gainNode = audioCtx.createGain();
+            oscillator.type = 'sine';
+            oscillator.frequency.value = frequency;
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + duration);
+        } catch(e) { console.log("Audio not allowed yet"); }
+    }
+
+    // Workout Engine
+    function startWorkout() {
+        if (activeIntervals.length === 0) return alert("Please add at least one interval!");
+        
+        // Hide configs, show HUD
+        document.getElementById('routine-selector-card').style.display = 'none';
+        document.getElementById('customizer-card').style.display = 'none';
+        document.getElementById('hud-card').style.display = 'block';
+
+        currentIntervalIndex = 0;
+        isPaused = false;
+        loadInterval(currentIntervalIndex);
+
+        if(workoutTimer) clearInterval(workoutTimer);
+        workoutTimer = setInterval(workoutTick, 1000);
+    }
+
+    function loadInterval(index) {
+        if(index >= activeIntervals.length) {
+            endWorkout();
+            return;
+        }
+        
+        const interval = activeIntervals[index];
+        timeRemainingInInterval = interval.duration * 60; // convert min to sec
+        
+        document.getElementById('hud-status').innerHTML = `<i data-lucide="zap"></i> Current: ${interval.type}`;
+        document.getElementById('hud-pace').innerText = `${interval.pace}`;
+        document.getElementById('hud-resistance').innerText = `${interval.resistance}`;
+        
+        // Setup text for what's next
+        if(index + 1 < activeIntervals.length) {
+            const next = activeIntervals[index+1];
+            document.getElementById('hud-next-step').innerText = `Next up: ${next.type} (${next.duration}m at ${next.pace} SPM)`;
+        } else {
+            document.getElementById('hud-next-step').innerText = `Next up: Finish Line!`;
+        }
+        
+        playBeep(587.33, 0.4); // High sound cue for switch
+        lucide.createIcons();
+        updateHudTimeDisplay();
+    }
+
+    function workoutTick() {
+        if(isPaused) return;
+
+        timeRemainingInInterval--;
+        updateHudTimeDisplay();
+
+        // Warning alerts in the final 3 seconds
+        if (timeRemainingInInterval <= 3 && timeRemainingInInterval > 0) {
+            playBeep(440, 0.1);
+            document.getElementById('hud-card').classList.add('alert-flash');
+        } else {
+            document.getElementById('hud-card').classList.remove('alert-flash');
+        }
+
+        if(timeRemainingInInterval <= 0) {
+            currentIntervalIndex++;
+            loadInterval(currentIntervalIndex);
+        }
+    }
+
+    function updateHudTimeDisplay() {
+        const mins = Math.floor(timeRemainingInInterval / 60);
+        const secs = timeRemainingInInterval % 60;
+        document.getElementById('hud-time').innerText = 
+            `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+        // Update progress bar
+        const totalSecs = activeIntervals[currentIntervalIndex].duration * 60;
+        const percent = ((totalSecs - timeRemainingInInterval) / totalSecs) * 100;
+        document.getElementById('workout-progress').style.width = `${percent}%`;
+    }
+
+    function togglePause() {
+        isPaused = !isPaused;
+        const btn = document.getElementById('pause-btn');
+        if(isPaused) {
+            btn.innerHTML = `<i data-lucide="play"></i> Resume`;
+            document.getElementById('hud-status').innerHTML = `<i data-lucide="pause-circle"></i> Paused`;
+        } else {
+            btn.innerHTML = `<i data-lucide="pause"></i> Pause`;
+            document.getElementById('hud-status').innerHTML = `<i data-lucide="zap"></i> Current: ${activeIntervals[currentIntervalIndex].type}`;
+        }
+        lucide.createIcons();
+    }
+
+    function stopWorkout() {
+        clearInterval(workoutTimer);
+        document.getElementById('routine-selector-card').style.display = 'block';
+        document.getElementById('customizer-card').style.display = 'block';
+        document.getElementById('hud-card').style.display = 'none';
+        document.getElementById('hud-card').classList.remove('alert-flash');
+    }
+
+    function endWorkout() {
+        clearInterval(workoutTimer);
+        playBeep(880, 0.8);
+        alert("Workout complete! Fantastic row.");
+        stopWorkout();
+    }
+</script>
+</body>
+</html>
