@@ -2,524 +2,250 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rowing Machine Coach</title>
     <style>
-        :root {
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #0f172a;
-            --text-muted: #64748b;
-            --primary: #0284c7;
-            --primary-hover: #0369a1;
-            --accent: #d97706;
-            --success: #16a34a;
-            --danger: #dc2626;
-            --border: #e2e8f0;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            padding: 2rem 1rem;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 800px;
+            font-family: sans-serif;
+            background: #ffffff;
+            color: #000000;
+            padding: 20px;
+            max-width: 600px;
             margin: 0 auto;
         }
-
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
+        .section {
+            border: 2px solid #ccc;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
         }
-
-        h1 {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
-
-        .card {
-            background-color: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        h2 {
-            font-size: 1.4rem;
-            margin-bottom: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Routine Grid */
-        .routine-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        @media (max-width: 600px) {
-            .routine-grid { grid-template-columns: 1fr; }
-        }
-
-        .btn-routine {
-            background: #f1f5f9;
-            border: 2px solid transparent;
-            color: var(--text);
-            padding: 1rem;
-            border-radius: 0.5rem;
+        .preset-btn {
+            padding: 10px;
+            margin-right: 10px;
+            margin-bottom: 10px;
             cursor: pointer;
-            text-align: left;
-            transition: all 0.2s;
+            background: #f0f0f0;
+            border: 1px solid #aaa;
         }
-
-        .btn-routine:hover {
-            background: #e2e8f0;
+        .active-preset {
+            background: #3182ce;
+            color: white;
         }
-
-        .btn-routine.active {
-            border-color: var(--primary);
-            background: #e0f2fe;
-        }
-
-        .routine-title {
-            font-weight: bold;
-            font-size: 1.1rem;
-            margin-bottom: 0.25rem;
-            color: var(--primary);
-        }
-
-        .routine-desc {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        /* Table Styles */
         table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 15px;
         }
-
         th, td {
-            padding: 0.75rem;
+            padding: 5px;
             text-align: left;
-            border-bottom: 1px solid var(--border);
         }
-
-        th { 
-            color: var(--text-muted); 
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-
         input {
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            color: var(--text);
-            padding: 0.4rem;
-            border-radius: 0.25rem;
-            width: 100%;
-            font-size: 0.95rem;
+            width: 80px;
+            padding: 4px;
         }
-
-        input:focus {
-            outline: 2px solid var(--primary);
+        .hud-box {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f7fafc;
+            border-left: 5px solid #3182ce;
         }
-
-        /* Buttons */
-        .btn {
-            background-color: var(--primary);
+        .big-timer {
+            font-size: 48px;
+            font-family: monospace;
+            color: #e53e3e;
+        }
+        .action-btn {
+            font-size: 18px;
+            padding: 10px 20px;
+            background: #2b6cb0;
             color: white;
             border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: background 0.2s;
+            border-radius: 4px;
         }
-
-        .btn:hover { background-color: var(--primary-hover); }
-        .btn-danger { background-color: var(--danger); }
-        .btn-danger:hover { background-color: #b91c1c; }
-        .btn-secondary { background-color: #64748b; }
-        .btn-secondary:hover { background-color: #475569; }
-
-        /* Workout HUD Layout */
-        .hud-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            text-align: center;
-            margin-top: 1.5rem;
-        }
-
-        .hud-block {
-            background: #f1f5f9;
-            padding: 1.2rem;
-            border-radius: 0.5rem;
-            border: 1px solid var(--border);
-        }
-
-        .hud-label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-        }
-
-        .hud-value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            font-family: monospace;
-            color: var(--text);
-            margin-top: 0.25rem;
-        }
-
-        .hud-value.highlight { color: var(--accent); }
-        .hud-value.pace { color: var(--primary); }
-
-        .progress-bar-container {
-            background: #e2e8f0;
-            height: 16px;
-            border-radius: 8px;
-            margin-top: 1.5rem;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            background: var(--success);
-            height: 100%;
-            width: 0%;
-            transition: width 1s linear;
-        }
-
-        .controls-row {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-            justify-content: center;
-        }
-
-        /* Interval change visual alert */
-        .alert-flash {
-            animation: flash 0.5s infinite alternate;
-        }
-
-        @keyframes flash {
-            from { background-color: #ffffff; }
-            to { background-color: #fef3c7; }
+        .danger-btn {
+            background: #c53030;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>🚣‍♂️ RowCoach</h1>
-        <p class="subtitle">Interactive Rowing Machine Workout Planner & Guide</p>
-    </header>
+    <h1>🚣‍♂️ Simple Row Coach</h1>
 
-    <div class="card" id="routine-selector-card">
-        <h2>📊 1. Select a Routine</h2>
-        <div class="routine-grid" id="routine-presets"></div>
-    </div>
+    <div class="section" id="setup-section">
+        <h3>1. Select a Routine</h3>
+        <button class="preset-btn active-preset" onclick="loadRoutine('pyramid')">Pace Pyramid</button>
+        <button class="preset-btn" onclick="loadRoutine('hiit')">HIIT Sprints</button>
+        <button class="preset-btn" onclick="loadRoutine('steady')">Steady State</button>
 
-    <div class="card" id="customizer-card">
-        <h2>⚙️ 2. Review / Customise Intervals</h2>
-        <table id="intervals-table">
+        <h3>2. Edit Intervals</h3>
+        <table>
             <thead>
                 <tr>
-                    <th>Interval Type</th>
-                    <th>Duration (Min)</th>
-                    <th>Target Pace (SPM)</th>
-                    <th>Resistance / Damper</th>
-                    <th>Action</th>
+                    <th>Label</th>
+                    <th>Minutes</th>
+                    <th>Pace (SPM)</th>
+                    <th>Damper</th>
                 </tr>
             </thead>
-            <tbody id="intervals-body"></tbody>
+            <tbody id="interval-rows">
+                </tbody>
         </table>
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <button class="btn btn-secondary" onclick="addIntervalRow()">➕ Add Interval</button>
-            <button class="btn" onclick="startWorkout()">▶️ Start Workout</button>
-        </div>
-    </div>
-
-    <div class="card" id="hud-card" style="display: none;">
-        <h2 id="hud-status">⏱️ Workout Active</h2>
         
-        <div class="hud-grid">
-            <div class="hud-block">
-                <div class="hud-label">Time Remaining</div>
-                <div class="hud-value" id="hud-time">00:00</div>
-            </div>
-            <div class="hud-block">
-                <div class="hud-label">Target Pace (SPM)</div>
-                <div class="hud-value pace" id="hud-pace">--</div>
-            </div>
-            <div class="hud-block">
-                <div class="hud-label">Damper / Resistance</div>
-                <div class="hud-value highlight" id="hud-resistance">--</div>
-            </div>
-        </div>
-
-        <div class="progress-bar-container">
-            <div class="progress-bar" id="workout-progress"></div>
-        </div>
-
-        <div style="text-align: center; margin-top: 1.5rem; color: var(--text-muted); font-weight: 500; font-size: 1.1rem;" id="hud-next-step">
-            Next up: Ready to row
-        </div>
-
-        <div class="controls-row">
-            <button class="btn btn-secondary" id="pause-btn" onclick="togglePause()">⏸️ Pause</button>
-            <button class="btn btn-danger" onclick="stopWorkout()">🛑 Stop / Reset</button>
-        </div>
+        <button class="action-btn" onclick="startWorkout()">▶ Start Workout</button>
     </div>
-</div>
+
+    <div class="section" id="hud-section" style="display:none;">
+        <h2 id="current-type">Warm Up</h2>
+        
+        <div class="hud-box">
+            Time Remaining:<br>
+            <span class="big-timer" id="display-time">00:00</span>
+        </div>
+
+        <div class="hud-box">
+            Target Pace: <span id="display-pace" style="color:#2b6cb0;">20</span> SPM
+        </div>
+
+        <div class="hud-box">
+            Machine Resistance: Damper <span id="display-damper" style="color:#dd6b20;">4</span>
+        </div>
+
+        <p id="display-next" style="color:#718096; font-style:italic;"></p>
+
+        <button class="action-btn danger-btn" onclick="stopWorkout()">🛑 Stop & Reset</button>
+    </div>
 
 <script>
-    const presets = {
-        pyramid: {
-            title: "Pace Pyramid",
-            desc: "Classic aerobic capacity builder. Step up the strokes, then back down.",
-            intervals: [
-                { type: "Warm Up", duration: 3, pace: 20, resistance: 4 },
-                { type: "Work Block", duration: 2, pace: 24, resistance: 5 },
-                { type: "Peak Burn", duration: 1, pace: 28, resistance: 5 },
-                { type: "Work Block", duration: 2, pace: 24, resistance: 5 },
-                { type: "Cool Down", duration: 3, pace: 18, resistance: 3 }
-            ]
-        },
-        hiit: {
-            title: "HIIT Sprints",
-            desc: "High intensity intervals to torch calories and build raw power.",
-            intervals: [
-                { type: "Warm Up", duration: 3, pace: 20, resistance: 4 },
-                { type: "Sprint 1", duration: 1, pace: 30, resistance: 6 },
-                { type: "Recovery", duration: 1, pace: 18, resistance: 4 },
-                { type: "Sprint 2", duration: 1, pace: 32, resistance: 6 },
-                { type: "Recovery", duration: 1, pace: 18, resistance: 4 },
-                { type: "Sprint 3", duration: 1, pace: 34, resistance: 6 },
-                { type: "Cool Down", duration: 2, pace: 18, resistance: 3 }
-            ]
-        },
-        steady: {
-            title: "Steady State",
-            desc: "Long endurance block mimicking open water baseline pacing.",
-            intervals: [
-                { type: "Warm Up", duration: 2, pace: 20, resistance: 4 },
-                { type: "Steady Row", duration: 10, pace: 22, resistance: 5 },
-                { type: "Cool Down", duration: 2, pace: 18, resistance: 4 }
-            ]
+    // Pure, raw JavaScript data arrays
+    var currentIntervals = [];
+    var currentIndex = 0;
+    var secondsLeft = 0;
+    var timerId = null;
+
+    // Hardcoded simple preset generator
+    function loadRoutine(name) {
+        // Highlight active button
+        var buttons = document.getElementsByClassName('preset-btn');
+        for(var i=0; i<buttons.length; i++) {
+            buttons[i].className = "preset-btn";
         }
-    };
-
-    let activeIntervals = [];
-    let currentIntervalIndex = 0;
-    let timeRemainingInInterval = 0; 
-    let workoutTimer = null;
-    let isPaused = false;
-    let audioCtx = null;
-
-    window.onload = () => {
-        setupPresetButtons();
-        selectPreset('pyramid');
-    };
-
-    function setupPresetButtons() {
-        const container = document.getElementById('routine-presets');
-        container.innerHTML = "";
-        for (let key in presets) {
-            container.innerHTML += `
-                <button class="btn-routine" id="preset-${key}" onclick="selectPreset('${key}')">
-                    <div class="routine-title">${presets[key].title}</div>
-                    <div class="routine-desc">${presets[key].desc}</div>
-                </button>
-            `;
-        }
-    }
-
-    function selectPreset(key) {
-        document.querySelectorAll('.btn-routine').forEach(b => b.classList.remove('active'));
-        const btn = document.getElementById(`preset-${key}`);
-        if(btn) btn.classList.add('active');
-
-        activeIntervals = JSON.parse(JSON.stringify(presets[key].intervals));
-        renderCustomizer();
-    }
-
-    function renderCustomizer() {
-        const tbody = document.getElementById('intervals-body');
-        tbody.innerHTML = "";
-        activeIntervals.forEach((interval, index) => {
-            tbody.innerHTML += `
-                <tr id="row-${index}">
-                    <td><input type="text" value="${interval.type}" onchange="updateInterval(${index}, 'type', this.value)"></td>
-                    <td><input type="number" value="${interval.duration}" min="0.5" step="0.5" onchange="updateInterval(${index}, 'duration', this.value)"></td>
-                    <td><input type="number" value="${interval.pace}" min="10" max="50" onchange="updateInterval(${index}, 'pace', this.value)"></td>
-                    <td><input type="number" value="${interval.resistance}" min="1" max="10" onchange="updateInterval(${index}, 'resistance', this.value)"></td>
-                    <td><button class="btn btn-danger" style="padding: 0.3rem 0.6rem" onclick="deleteRow(${index})">✕</button></td>
-                </tr>
-            `;
-        });
-    }
-
-    function updateInterval(index, property, value) {
-        if (property === 'duration' || property === 'pace' || property === 'resistance') {
-            let num = parseFloat(value);
-            activeIntervals[index][property] = isNaN(num) ? 1 : num;
+        if(name === 'pyramid') {
+            event.target.className = "preset-btn active-preset";
+            currentIntervals = [
+                {name: "Warm Up", min: 3, spm: 20, damper: 4},
+                {name: "Work Block", min: 2, spm: 24, damper: 5},
+                {name: "Peak Interval", min: 1, spm: 28, damper: 5},
+                {name: "Cool Down", min: 2, spm: 18, damper: 3}
+            ];
+        } else if(name === 'hiit') {
+            event.target.className = "preset-btn active-preset";
+            currentIntervals = [
+                {name: "Warm Up", min: 2, spm: 20, damper: 4},
+                {name: "Sprint!", min: 1, spm: 30, damper: 6},
+                {name: "Rest Row", min: 1, spm: 18, damper: 4},
+                {name: "Sprint!", min: 1, spm: 32, damper: 6},
+                {name: "Cool Down", min: 2, spm: 18, damper: 3}
+            ];
         } else {
-            activeIntervals[index][property] = value;
+            event.target.className = "preset-btn active-preset";
+            currentIntervals = [
+                {name: "Warm Up", min: 2, spm: 20, damper: 4},
+                {name: "Steady State", min: 10, spm: 22, damper: 5},
+                {name: "Cool Down", min: 2, spm: 18, damper: 4}
+            ];
+        }
+        renderTable();
+    }
+
+    function renderTable() {
+        var tbody = document.getElementById('interval-rows');
+        tbody.innerHTML = "";
+        for(var i = 0; i < currentIntervals.length; i++) {
+            tbody.innerHTML += "<tr>" +
+                "<td><input type='text' value='" + currentIntervals[i].name + "' onchange='updateVal(" + i + ", \"name\", this.value)'></td>" +
+                "<td><input type='number' value='" + currentIntervals[i].min + "' onchange='updateVal(" + i + ", \"min\", this.value)'></td>" +
+                "<td><input type='number' value='" + currentIntervals[i].spm + "' onchange='updateVal(" + i + ", \"spm\", this.value)'></td>" +
+                "<td><input type='number' value='" + currentIntervals[i].damper + "' onchange='updateVal(" + i + ", \"damper\", this.value)'></td>" +
+            "</tr>";
         }
     }
 
-    function addIntervalRow() {
-        activeIntervals.push({ type: "Work Block", duration: 1, pace: 24, resistance: 5 });
-        renderCustomizer();
+    function updateVal(index, key, val) {
+        if(key === 'name') {
+            currentIntervals[index][key] = val;
+        } else {
+            currentIntervals[index][key] = parseFloat(val) || 0;
+        }
     }
 
-    function deleteRow(index) {
-        activeIntervals.splice(index, 1);
-        renderCustomizer();
-    }
-
-    function playBeep(frequency = 440, duration = 0.2) {
-        try {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            let oscillator = audioCtx.createOscillator();
-            let gainNode = audioCtx.createGain();
-            oscillator.type = 'sine';
-            oscillator.frequency.value = frequency;
-            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + duration);
-        } catch(e) { console.log("Audio not supported or blocked."); }
-    }
-
+    // Engine Controls
     function startWorkout() {
-        if (activeIntervals.length === 0) return alert("Please add at least one interval!");
+        if(currentIntervals.length === 0) return;
         
-        document.getElementById('routine-selector-card').style.display = 'none';
-        document.getElementById('customizer-card').style.display = 'none';
-        document.getElementById('hud-card').style.display = 'block';
-
-        currentIntervalIndex = 0;
-        isPaused = false;
+        document.getElementById('setup-section').style.display = 'none';
+        document.getElementById('hud-section').style.display = 'block';
         
-        loadInterval(currentIntervalIndex);
+        currentIndex = 0;
+        setupSegment(currentIndex);
 
-        if(workoutTimer) clearInterval(workoutTimer);
-        workoutTimer = setInterval(workoutTick, 1000);
+        clearInterval(timerId);
+        timerId = setInterval(tick, 1000);
     }
 
-    function loadInterval(index) {
-        if(index >= activeIntervals.length) {
-            endWorkout();
+    function setupSegment(index) {
+        if(index >= currentIntervals.length) {
+            clearInterval(timerId);
+            alert("Workout finished! Great row.");
+            stopWorkout();
             return;
         }
-        
-        const interval = activeIntervals[index];
-        timeRemainingInInterval = Math.max(1, Math.round(interval.duration * 60)); 
-        
-        document.getElementById('hud-status').innerText = `⚡ Current: ${interval.type}`;
-        document.getElementById('hud-pace').innerText = `${interval.pace}`;
-        document.getElementById('hud-resistance').innerText = `${interval.resistance}`;
-        
-        if(index + 1 < activeIntervals.length) {
-            const next = activeIntervals[index+1];
-            document.getElementById('hud-next-step').innerText = `Next up: ${next.type} (${next.duration}m at ${next.pace} SPM)`;
+
+        var segment = currentIntervals[index];
+        secondsLeft = Math.round(segment.min * 60);
+
+        document.getElementById('current-type').innerText = "🔥 Current: " + segment.name;
+        document.getElementById('display-pace').innerText = segment.spm;
+        document.getElementById('display-damper').innerText = segment.damper;
+
+        // Next preview lookahead
+        if(index + 1 < currentIntervals.length) {
+            var next = currentIntervals[index + 1];
+            document.getElementById('display-next').innerText = "Up Next: " + next.name + " (" + next.min + " min at " + next.spm + " SPM)";
         } else {
-            document.getElementById('hud-next-step').innerText = `Next up: Finish Line! 🏁`;
+            document.getElementById('display-next').innerText = "Up Next: Finished!";
         }
-        
-        updateHudTimeDisplay();
-        playBeep(587.33, 0.4); 
+
+        updateTimeText();
     }
 
-    function workoutTick() {
-        if(isPaused) return;
-
-        timeRemainingInInterval--;
-        updateHudTimeDisplay();
-
-        if (timeRemainingInInterval <= 3 && timeRemainingInInterval > 0) {
-            playBeep(440, 0.1);
-            document.getElementById('hud-card').classList.add('alert-flash');
+    function tick() {
+        secondsLeft--;
+        if(secondsLeft < 0) {
+            currentIndex++;
+            setupSegment(currentIndex);
         } else {
-            document.getElementById('hud-card').classList.remove('alert-flash');
-        }
-
-        if(timeRemainingInInterval <= 0) {
-            currentIntervalIndex++;
-            loadInterval(currentIntervalIndex);
+            updateTimeText();
         }
     }
 
-    function updateHudTimeDisplay() {
-        const mins = Math.floor(timeRemainingInInterval / 60);
-        const secs = timeRemainingInInterval % 60;
-        document.getElementById('hud-time').innerText = 
-            `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-
-        const totalSecs = activeIntervals[currentIntervalIndex].duration * 60;
-        const percent = ((totalSecs - timeRemainingInInterval) / totalSecs) * 100;
-        document.getElementById('workout-progress').style.width = `${Math.min(100, Math.max(0, percent))}%`;
-    }
-
-    function togglePause() {
-        isPaused = !isPaused;
-        const btn = document.getElementById('pause-btn');
-        if(isPaused) {
-            btn.innerText = `▶️ Resume`;
-            document.getElementById('hud-status').innerText = `⏸️ Paused`;
-        } else {
-            btn.innerText = `⏸️ Pause`;
-            document.getElementById('hud-status').innerText = `⚡ Current: ${activeIntervals[currentIntervalIndex].type}`;
-        }
+    function updateTimeText() {
+        var m = Math.floor(secondsLeft / 60);
+        var s = secondsLeft % 60;
+        if (m < 10) m = "0" + m;
+        if (s < 10) s = "0" + s;
+        document.getElementById('display-time').innerText = m + ":" + s;
     }
 
     function stopWorkout() {
-        clearInterval(workoutTimer);
-        document.getElementById('routine-selector-card').style.display = 'block';
-        document.getElementById('customizer-card').style.display = 'block';
-        document.getElementById('hud-card').style.display = 'none';
-        document.getElementById('hud-card').classList.remove('alert-flash');
+        clearInterval(timerId);
+        document.getElementById('setup-section').style.display = 'block';
+        document.getElementById('hud-section').style.display = 'none';
     }
 
-    function endWorkout() {
-        clearInterval(workoutTimer);
-        playBeep(880, 0.8);
-        alert("Workout complete! Fantastic row.");
-        stopWorkout();
-    }
+    // Default load
+    loadRoutine('pyramid');
 </script>
 </body>
 </html>
