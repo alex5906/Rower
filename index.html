@@ -274,18 +274,33 @@
             1. Select a Routine
         </h2>
         <div class="routine-grid" id="routine-presets">
+            
             <button class="btn-routine active" id="preset-pyramid" onclick="selectPreset('pyramid')">
-                <div class="routine-title">Pace Pyramid</div>
+                <div class="routine-title">Pace Pyramid (11m)</div>
                 <div class="routine-desc">Classic aerobic capacity builder. Step up the strokes, then back down.</div>
             </button>
             <button class="btn-routine" id="preset-hiit" onclick="selectPreset('hiit')">
-                <div class="routine-title">HIIT Sprints</div>
-                <div class="routine-desc">High intensity intervals to torch calories and build raw power.</div>
+                <div class="routine-title">HIIT Sprints (10m)</div>
+                <div class="routine-desc">High intensity intervals to torch calories and build raw speed.</div>
             </button>
             <button class="btn-routine" id="preset-steady" onclick="selectPreset('steady')">
-                <div class="routine-title">Steady State</div>
+                <div class="routine-title">Steady State (14m)</div>
                 <div class="routine-desc">Long endurance block mimicking open water baseline pacing.</div>
             </button>
+
+            <button class="btn-routine" id="preset-surge10" onclick="selectPreset('surge10')">
+                <div class="routine-title">Power Surge (10m)</div>
+                <div class="routine-desc">Short, explosive maximal strength bursts. Focus on hard leg drive.</div>
+            </button>
+            <button class="btn-routine" id="preset-power15" onclick="selectPreset('power15')">
+                <div class="routine-title">Power Pulls (15m)</div>
+                <div class="routine-desc">Low SPM (18-20), heavy resistance. Treat every stroke like a deadlift.</div>
+            </button>
+            <button class="btn-routine" id="preset-grind20" onclick="selectPreset('grind20')">
+                <div class="routine-title">Heavy Grind (20m)</div>
+                <div class="routine-desc">Sustained 5-minute heavy blocks to build muscular endurance & core.</div>
+            </button>
+            
         </div>
     </div>
 
@@ -389,6 +404,38 @@
                 { type: "Steady Row", duration: 10, pace: 22, baseRes: 6 },
                 { type: "Cool Down", duration: 2, pace: 18, baseRes: 3 }
             ]
+        },
+        surge10: {
+            intervals: [
+                { type: "Warm Up", duration: 2, pace: 20, baseRes: 5 },
+                { type: "Max Power", duration: 1, pace: 24, baseRes: 10 },
+                { type: "Recovery", duration: 1, pace: 18, baseRes: 4 },
+                { type: "Max Power", duration: 1, pace: 24, baseRes: 10 },
+                { type: "Recovery", duration: 1, pace: 18, baseRes: 4 },
+                { type: "Max Power", duration: 1, pace: 24, baseRes: 10 },
+                { type: "Cool Down", duration: 3, pace: 18, baseRes: 3 }
+            ]
+        },
+        power15: {
+            intervals: [
+                { type: "Warm Up", duration: 3, pace: 20, baseRes: 4 },
+                { type: "Heavy Pulls", duration: 2, pace: 18, baseRes: 9 },
+                { type: "Active Rest", duration: 1, pace: 22, baseRes: 3 },
+                { type: "Heavy Pulls", duration: 2, pace: 18, baseRes: 10 },
+                { type: "Active Rest", duration: 1, pace: 22, baseRes: 3 },
+                { type: "Heavy Pulls", duration: 2, pace: 20, baseRes: 9 },
+                { type: "Active Rest", duration: 1, pace: 22, baseRes: 3 },
+                { type: "Cool Down", duration: 3, pace: 18, baseRes: 2 }
+            ]
+        },
+        grind20: {
+            intervals: [
+                { type: "Warm Up", duration: 4, pace: 20, baseRes: 4 },
+                { type: "Power Block", duration: 5, pace: 20, baseRes: 8 },
+                { type: "Recovery", duration: 2, pace: 22, baseRes: 3 },
+                { type: "Power Block", duration: 5, pace: 22, baseRes: 8 },
+                { type: "Cool Down", duration: 4, pace: 18, baseRes: 3 }
+            ]
         }
     };
 
@@ -407,13 +454,11 @@
     function selectPreset(key) {
         currentPresetKey = key;
         
-        // Reset all button styles using old-school className replacement
         var buttons = document.getElementsByClassName('btn-routine');
         for (var i = 0; i < buttons.length; i++) {
             buttons[i].className = "btn-routine";
         }
         
-        // Highlight active button
         var btn = document.getElementById('preset-' + key);
         if (btn) btn.className = "btn-routine active";
 
